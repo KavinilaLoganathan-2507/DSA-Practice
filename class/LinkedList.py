@@ -615,7 +615,7 @@ if __name__ == "__main__":
     dll.insert_after(dll.head.next, 25) 
     dll.print_list() 
 
-    print("\n--- Testing Deletions ---")
+    print("\n Testing Deletions ")
     dll.delete_by_value(25)
     print("After deleting middle value 25:")
     dll.print_list()
@@ -624,7 +624,7 @@ if __name__ == "__main__":
     print("After deleting head:")
     dll.print_list()
 
-    print("\n--- Double-Checking Links (Reverse) ---")
+    print("\n double-Checking Links (Reverse)")
     dll.print_list_reverse()
 
 #circular linked list
@@ -634,6 +634,215 @@ class Node:
         self.data = data
         self.next = None
         self.prev = None
+
+class CircularDoublyLinkedList:
+    def __init__(self):
+        self.head = None
+
+    # --- INSERTION OPERATIONS ---
+
+    def insert_at_beginning(self, data):
+       
+        new_node = Node(data)
+        if self.head is None:
+            new_node.next = new_node
+            new_node.prev = new_node
+            self.head = new_node
+        else:
+            last = self.head.prev
+            
+            new_node.next = self.head
+            new_node.prev = last
+            
+            last.next = new_node
+            self.head.prev = new_node
+            self.head = new_node
+
+    def insert_at_end(self, data):
         
+        new_node = Node(data)
+        if self.head is None:
+            new_node.next = new_node
+            new_node.prev = new_node
+            self.head = new_node
+        else:
+            last = self.head.prev
+            
+            last.next = new_node
+            new_node.prev = last
+            new_node.next = self.head
+            self.head.prev = new_node
+
+    def insert_after(self, target_data, data):
+        
+        if self.head is None:
+            print("List is empty. Target node not found.")
+            return
+
+        current = self.head
+        while True:
+            if current.data == target_data:
+                new_node = Node(data)
+                nxt = current.next
+                
+                current.next = new_node
+                new_node.prev = current
+                new_node.next = nxt
+                nxt.prev = new_node
+                return
+            current = current.next
+            if current == self.head:
+                break
+        print(f"Target node with data '{target_data}' not found.")
+
+    # --- DELETION OPERATIONS ---
+
+    def delete_from_beginning(self):
+       
+        if self.head is None:
+            print("List is empty. Nothing to delete.")
+            return
+
     
-                                                                                  
+        if self.head.next == self.head:
+            self.head = None
+            return
+
+        last = self.head.prev
+        self.head = self.head.next
+        last.next = self.head
+        self.head.prev = last
+
+    def delete_from_end(self):
+      
+        if self.head is None:
+            print("List is empty. Nothing to delete.")
+            return
+
+       
+        if self.head.next == self.head:
+            self.head = None
+            return
+
+        last = self.head.prev
+        second_last = last.prev
+        
+        second_last.next = self.head
+        self.head.prev = second_last
+
+    def delete_value(self, data):
+        
+        if self.head is None:
+            print("List is empty. Nothing to delete.")
+            return
+
+        current = self.head
+        while True:
+            if current.data == data:
+              
+                if current.next == self.head and current.prev == self.head:
+                    self.head = None
+                    return
+                
+                
+                if current == self.head:
+                    self.delete_from_beginning()
+                    return
+                
+             
+                nxt = current.next
+                prv = current.prev
+                prv.next = nxt
+                nxt.prev = prv
+                return
+
+            current = current.next
+            if current == self.head:
+                break
+        print(f"Value '{data}' not found in the list.")
+
+    # --- UTILITY OPERATIONS ---
+
+    def search(self, data):
+        
+        if self.head is None:
+            return False
+
+        current = self.head
+        while True:
+            if current.data == data:
+                return True
+            current = current.next
+            if current == self.head:
+                break
+        return False
+
+    def get_length(self):
+       
+        if self.head is None:
+            return 0
+
+        count = 0
+        current = self.head
+        while True:
+            count += 1
+            current = current.next
+            if current == self.head:
+                break
+        return count
+
+    def reverse(self):
+       
+        if self.head is None or self.head.next == self.head:
+            return
+
+        current = self.head
+        last = self.head.prev
+        
+        while True:
+            nxt = current.next
+            current.next = current.prev
+            current.prev = nxt
+            
+            current = nxt
+            if current == self.head:
+                break
+        
+       
+        self.head = last
+
+    def print_list(self):
+      
+        if self.head is None:
+            print("List is empty.")
+            return
+
+        current = self.head
+        while True:
+            print(f"{current.data}", end=" <-> ")
+            current = current.next
+            if current == self.head:
+                break
+        print("(circular head)")
+
+cdll = CircularDoublyLinkedList()
+
+# Insertions
+cdll.insert_at_end(10)
+cdll.insert_at_end(20)
+cdll.insert_at_end(30)
+cdll.insert_at_beginning(5)
+cdll.insert_after(20, 25)
+
+print("Original List:")
+
+print("\nAfter Deletions:")
+cdll.print_list()  
+
+
+print(f"\nList length: {cdll.get_length()}")  
+print(f"Is 25 in the list?: {cdll.search(25)}")  
+
+cdll.reverse()
+print("\nAfter Reversing:")
+cdll.print_list()  
